@@ -1,0 +1,6 @@
+object 0fedb2466bcb3c360f253f7e381b824aa8906016
+type commit
+tag 6.21.1_arenadata36
+tagger Artem Eluferev <ae@arenadata.io> 1661326739 +0300
+
+Greenplum-db version:6.21.1_arenadata36

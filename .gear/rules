@@ -1,0 +1,4 @@
+tar: @version@:.
+tar: pgbouncer:. name=source
+tar: pythonsrc:. name=ext
+tar: googletest:. name=googletest
