@@ -168,6 +168,16 @@ CXformUpdate2DML::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
 		pexprAssertConstraints);
 
 	// TODO:  - Oct 30, 2012; detect and handle AFTER triggers on update
+	if (CXformUtils::FTriggersExist(CLogicalDML::EdmlUpdate, ptabdesc,
+									false /*fBefore*/))
+	{
+		rel_mdid->AddRef();
+		pdrgpcrDelete->AddRef();
+		pdrgpcrInsert->AddRef();
+		pexprDML = CXformUtils::PexprRowTrigger(
+			mp, pexprDML, CLogicalDML::EdmlUpdate, rel_mdid, false /*fBefore*/,
+			pdrgpcrDelete, pdrgpcrInsert);
+	}
 
 	pxfres->Add(pexprDML);
 }
