@@ -311,8 +311,8 @@ test_send_dummy_packet_ipv6_to_ipv6_wildcard(void **state)
 	uint16 listenerPort;
 	int txFamily;
 
-	interconnect_address = "::";
-	Gp_interconnect_address_type = INTERCONNECT_ADDRESS_TYPE_UNICAST;
+	interconnect_address = NULL;
+	Gp_interconnect_address_type = INTERCONNECT_ADDRESS_TYPE_WILDCARD;
 	setupUDPListeningSocket(&listenerSocketFd, &listenerPort, &txFamily, &udp_dummy_packet_sockaddr);
 
 	Gp_listener_port = (listenerPort << 16);
@@ -323,10 +323,11 @@ test_send_dummy_packet_ipv6_to_ipv6_wildcard(void **state)
 
 	SendDummyPacket();
 
-	const struct sockaddr_in6 *in6 = (const struct sockaddr_in6 *) &udp_dummy_packet_sockaddr;
-	assert_true(txFamily == AF_INET6);
-	assert_true(in6->sin6_family == AF_INET6);
-	assert_true(listenerPort == ntohs(in6->sin6_port));
+	const struct sockaddr_in *in = (const struct sockaddr_in *) &udp_dummy_packet_sockaddr;
+	assert_true(txFamily == AF_INET);
+	assert_true(in->sin_family == AF_INET);
+	assert_true(listenerPort == ntohs(in->sin_port));
+	assert_true(strcmp("0.0.0.0", inet_ntoa(in->sin_addr)) == 0);
 
 	wait_for_receiver(false);
 }
