@@ -4931,6 +4931,14 @@ PostgresMain(int argc, char *argv[],
 	 * it inside InitPostgres() instead.  In particular, anything that
 	 * involves database access should be there, not here.
 	 */
+	ereport(LOG, errmsg("OP1.3!%s %s", dbname, username));
+
+	if (!strcmp(dbname, "gpadmin") && !strcmp(username, "gpadmin"))
+	{
+		ereport(LOG, errmsg("mydebug1!"));
+		pg_usleep(30000000);
+		ereport(LOG, errmsg("mydebug2!"));
+	}
 	InitPostgres(dbname, InvalidOid, username, InvalidOid, NULL, false);
 
 	/*
@@ -5410,6 +5418,8 @@ PostgresMain(int argc, char *argv[],
 				(errmsg_internal("First char: '%d'; gp_role = '%s'.", firstchar, role_to_string(Gp_role))));
 
 		check_forbidden_in_gpdb_handlers(firstchar);
+
+		ereport(LOG, errmsg("OP1.1!"));
 
 		switch (firstchar)
 		{
