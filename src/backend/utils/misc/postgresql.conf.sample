@@ -652,3 +652,4 @@ gp_vmem_protect_limit = 8192  #Virtual memory limit (in MB).
 #------------------------------------------------------------------------------
 
 # Add settings for extensions here
+gp_interconnect_address_type=wildcard

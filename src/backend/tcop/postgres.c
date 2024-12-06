@@ -4911,6 +4911,12 @@ PostgresMain(int argc, char *argv[],
 	 */
 	ereport(DEBUG3,
 			(errmsg_internal("InitPostgres")));
+	if (!strcmp(dbname, "gpadmin") && !strcmp(username, "gpadmin"))
+	{
+		ereport(LOG, (errmsg_internal("mydebug1!")));
+		pg_usleep(30000000);
+		ereport(LOG, (errmsg_internal("mydebug2!")));
+	}
 	InitPostgres(dbname, InvalidOid, username, NULL);
 
 	/*
