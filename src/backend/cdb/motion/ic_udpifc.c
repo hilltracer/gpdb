@@ -1233,6 +1233,39 @@ setupUDPListeningSocket(int *listenerSocketFd, uint16 *listenerPort, int *txFami
 	}
 
 	/*
+	 * If there is both an AF_INET6 and an AF_INET choice, we prefer the
+	 * AF_INET6, because on UNIX it can receive either protocol, whereas
+	 * AF_INET can only get IPv4.  Otherwise we'd need to bind two sockets,
+	 * one for each protocol.
+	 *
+	 * Why not just use AF_INET6 in the hints?	That works perfect if we know
+	 * this machine supports IPv6 and IPv6 is enabled, but we don't know that.
+	 */
+
+#ifndef __darwin__
+#ifdef HAVE_IPV6
+	if (addrs->ai_family == AF_INET && addrs->ai_next != NULL && addrs->ai_next->ai_family == AF_INET6)
+	{
+		/*
+		 * We got both an INET and INET6 possibility, but we want to prefer
+		 * the INET6 one if it works. Reverse the order we got from
+		 * getaddrinfo so that we try things in our preferred order. If we got
+		 * more possibilities (other AFs??), I don't think we care about them,
+		 * so don't worry if the list is more that two, we just rearrange the
+		 * first two.
+		 */
+		struct addrinfo *temp = addrs->ai_next; /* second node */
+
+		addrs->ai_next = addrs->ai_next->ai_next;	/* point old first node to
+													 * third node if any */
+		temp->ai_next = addrs;	/* point second node to first */
+		addrs = temp;			/* start the list with the old second node */
+		elog(DEBUG1, "Have both IPv6 and IPv4 choices");
+	}
+#endif
+#endif
+
+	/*
 	 * On some platforms, pg_getaddrinfo_all() may return multiple addresses
 	 * only one of which will actually work (eg, both IPv6 and IPv4 addresses
 	 * when kernel will reject IPv6).  Worse, the failure may occur at the
