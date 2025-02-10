@@ -4,6 +4,28 @@ COPY README.Ubuntu.bash ./
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
+    # 1) Install prerequisites for pulling LLVM packages:
+        apt-get update && apt-get install -y \
+        wget \
+        gnupg \
+        lsb-release && \
+      \
+      # 2) Add LLVM GPG key:
+      wget https://apt.llvm.org/llvm-snapshot.gpg.key && \
+      apt-key add llvm-snapshot.gpg.key && \
+      \
+      # 3) Add the apt.llvm.org repository for LLVM 18 on Ubuntu 22.04 (jammy):
+      echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" \
+        > /etc/apt/sources.list.d/llvm18.list && \
+      apt-get update && \
+      \
+      # 4) Install LLVM and Clang 18:
+      apt-get install -y llvm-18 clang-18 lldb-18 && \
+      \
+      # Optionally, if you want 'clang' to point to clang-18 by default, use update-alternatives:
+      update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 50 && \
+      update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 50 && \
+      \  
     ./README.Ubuntu.bash; \
     rm README.Ubuntu.bash; \
 # The en_US.UTF-8 locale is needed to run GPDB
