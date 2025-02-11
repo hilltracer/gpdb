@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Inside Docker",
+            "type": "shell",
+            "command": "docker exec gpdb7u make -s -j12 -C /home/gpadmin/src/gpdb7u",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["relative", "/home/den/gpdb/src/gpdb7u"],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "Clean Inside Docker",
+            "type": "shell",
+            "command": "docker exec gpdb7u make clean -C /home/gpadmin/src/gpdb7u",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Install Inside Docker",
+            "type": "shell",
+            "command": "docker exec gpdb7u make install -C /home/gpadmin/src/gpdb7u",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        }
+    ]
+}

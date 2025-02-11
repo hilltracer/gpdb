@@ -52,7 +52,6 @@ build.sh
 .cproject
 .project
 .settings/
-.vscode/
 GPATH
 GRTAGS
 GTAGS

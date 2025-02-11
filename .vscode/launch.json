@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Attach to GPDB in docker",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "/home/den/gpdb/.local/7u/bin/postgres",
+            "processId": "${command:pickProcess}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "targetArchitecture": "x86_64",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set disassembly flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Follow child process on fork",
+                    "text": "set follow-fork-mode child",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Do not detach other process on fork",
+                    "text": "set detach-on-fork off",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable stopping on SIGUSR1",
+                    "text": "handle SIGUSR1 nostop noprint",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Substitute source path from inside Docker to host",
+                    "text": "set substitute-path /home/gpadmin/src/gpdb7u /home/den/gpdb/src/gpdb7u",
+                    "ignoreFailures": true
+                }
+            ],
+        }
+    ]
+}
