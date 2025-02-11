@@ -42,7 +42,6 @@
 #include "postgres.h"
 
 #ifdef USE_ZSTD
-#define ZSTD_STATIC_LINKING_ONLY
 #include <zstd.h>
 #endif
 
@@ -56,7 +55,6 @@
 #include "utils/resowner.h"
 
 #include "storage/gp_compress.h"
-#include "utils/gp_alloc.h"
 #include "utils/faultinjector.h"
 #include "utils/workfile_mgr.h"
 
@@ -1279,26 +1277,6 @@ BufFilePledgeSequential(BufFile *buffile)
 
 #define BUFFILE_ZSTD_COMPRESSION_LEVEL 1
 
-static void *
-zstdCustomAlloc(void *opaque, size_t size)
-{
-	(void) opaque;
-	return MemoryContextAlloc(TopMemoryContext, size);
-}
-
-static void
-zstdCustomFree(void *opaque, void *address)
-{
-	(void) opaque;
-	pfree(address);
-}
-
-static ZSTD_customMem zstdCustomMem =
-{
-	.customAlloc = zstdCustomAlloc,
-	.customFree = zstdCustomFree
-};
-
 /*
  * Temporary buffer used during compression. It's used only within the
  * functions, so we can allocate this once and reuse it for all files.
@@ -1339,7 +1317,7 @@ BufFileStartCompression(BufFile *file)
 	CurrentResourceOwner = file->resowner;
 
 	file->zstd_context = zstd_alloc_context();
-	file->zstd_context->cctx = ZSTD_createCStream_advanced(zstdCustomMem);
+	file->zstd_context->cctx = ZSTD_createCStream();
 	if (!file->zstd_context->cctx)
 		elog(ERROR, "out of memory");
 	ret = ZSTD_initCStream(file->zstd_context->cctx, BUFFILE_ZSTD_COMPRESSION_LEVEL);
@@ -1446,7 +1424,7 @@ BufFileEndCompression(BufFile *file)
 		 file->uncompressed_bytes, BufFileSize(file));
 
 	/* Done writing. Initialize for reading */
-	file->zstd_context->dctx = ZSTD_createDStream_advanced(zstdCustomMem);
+	file->zstd_context->dctx = ZSTD_createDStream();
 	if (!file->zstd_context->dctx)
 		elog(ERROR, "out of memory");
 	ret = ZSTD_initDStream(file->zstd_context->dctx);
