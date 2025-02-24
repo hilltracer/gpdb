@@ -1,5 +1,7 @@
 FROM rockylinux:8.8 as base
 
+COPY arenadata/libzstd-1.4.4-1.el8.x86_64.rpm /
+
 # Install some basic utilities and build tools
 RUN dnf -y install 'dnf-command(config-manager)' && dnf config-manager --set-enabled devel && dnf makecache && dnf update -y ca-certificates && \
     rpm --import https://mirror.yandex.ru/rockylinux/RPM-GPG-KEY-Rocky-8 && \
@@ -20,6 +22,7 @@ RUN dnf makecache && \
     dnf -y install python3.11-psycopg2 python3.11-pyyaml python3.11-lxml python3.11-pip && \
     dnf -y install llvm-devel clang && \
     dnf -y install protobuf-compiler && \
+    dnf -y reinstall /libzstd-1.4.4-1.el8.x86_64.rpm && \
     dnf clean all && \
     #we install pytest from pypi since the version from the repository does not contain an executable file
     #the rest of the packages are not available in the repository.
