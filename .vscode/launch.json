@@ -42,6 +42,35 @@
                     "ignoreFailures": true
                 }
             ],
+        },
+        {
+            "name": "(gdb) Analyze GPDB core dump",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/den/gpdb/.local/7u/bin/postgres",
+            "args": [],
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "coreDumpPath": "/home/den/tasks/ADBDEV-7273/coredump/core.8536",
+            "cwd": "${workspaceFolder}",
+            "targetArchitecture": "x86_64",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set disassembly flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Substitute source path from inside Docker to host",
+                    "text": "set substitute-path /home/gpadmin/src/gpdb7u /home/den/gpdb/src/gpdb7u",
+                    "ignoreFailures": true
+                }
+            ]
         }
     ]
 }
